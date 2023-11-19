@@ -1,3 +1,3 @@
-module dkafetzi.com/facebook/tradesor
+module amolofos/tradesor
 
-go 1.20
+go 1.21.4
