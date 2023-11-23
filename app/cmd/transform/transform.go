@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	modelFormat "amolofos/tradesor/pkg/models/outputFormat"
+	"amolofos/tradesor/pkg/models/models_outputFormat"
 	"amolofos/tradesor/pkg/services/loader"
 	"amolofos/tradesor/pkg/services/transformer"
 	"amolofos/tradesor/pkg/services/unloader"
@@ -13,7 +13,7 @@ import (
 
 var (
 	outputTo     string = ""
-	outputFormat modelFormat.OutputFormat
+	outputFormat models_outputFormat.OutputFormat
 )
 
 var TransformCmd = &cobra.Command{
@@ -25,7 +25,7 @@ var TransformCmd = &cobra.Command{
 
 func init() {
 	TransformCmd.Flags().StringVarP(&outputTo, "outputTo", "", "./output", "Location of the output files. It can be a url (for wordpress) or a local directory.")
-	TransformCmd.Flags().VarP(&outputFormat, "outputFormat", "", "What format to use for the output: "+modelFormat.GetAllSupportedValues())
+	TransformCmd.Flags().VarP(&outputFormat, "outputFormat", "", "What format to use for the output: "+models_outputFormat.GetAllSupportedValues())
 }
 
 func transform(cmd *cobra.Command, args []string) {
@@ -48,7 +48,7 @@ func transform(cmd *cobra.Command, args []string) {
 		slog.Error("Failed to load document with error ", errLoad)
 	}
 
-	out, errTransform := t.Transform(doc, modelFormat.OutputFormat(cmd.Flag("outputFormat").Value.String()))
+	out, errTransform := t.Transform(doc, models_outputFormat.OutputFormat(cmd.Flag("outputFormat").Value.String()))
 	if errTransform != nil {
 		slog.Error("Failed to transform document with error ", errTransform)
 	}

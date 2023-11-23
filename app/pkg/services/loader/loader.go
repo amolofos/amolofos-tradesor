@@ -10,17 +10,14 @@ import (
 
 	"amolofos/tradesor/pkg/conf"
 
-	"amolofos/tradesor/pkg/features/tradesor/models"
+	"amolofos/tradesor/pkg/features/tradesor/tradesor_models"
 )
 
-type Loader struct {
-}
+type Loader struct{}
 
-func (l *Loader) Init() {
+func (l *Loader) Init() {}
 
-}
-
-func (l *Loader) Load(catalog string) (doc *models.Xml, err error) {
+func (l *Loader) Load(catalog string) (xmlDoc *tradesor_models.Xml, err error) {
 	_, errParseUrl := url.ParseRequestURI(catalog)
 	if errParseUrl != nil {
 		return l.loadFromLocalFile(catalog)
@@ -51,7 +48,7 @@ func (l *Loader) downloadFileFromUrl(catalog string) (file string, err error) {
 	return conf.LOCAL_BUILD_DIR + "/test.xml", nil
 }
 
-func (l *Loader) loadFromLocalFile(file string) (doc *models.Xml, err error) {
+func (l *Loader) loadFromLocalFile(file string) (xmlDoc *tradesor_models.Xml, err error) {
 	xmlFile, errXmlOpen := os.Open(file)
 	if errXmlOpen != nil {
 		slog.Error("Error opening file:", errXmlOpen)
@@ -65,7 +62,7 @@ func (l *Loader) loadFromLocalFile(file string) (doc *models.Xml, err error) {
 		return nil, errXmlRead
 	}
 
-	var xmlDoc models.Xml
+	xmlDoc = &tradesor_models.Xml{}
 	xml.Unmarshal(xmlRead, &xmlDoc.Tradesor)
 	return
 }
