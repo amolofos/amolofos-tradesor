@@ -1,0 +1,63 @@
+---
+# https://github.com/goreleaser/goreleaser-example-supply-chain/blob/main/.github
+# https://carlosbecker.com/posts/goreleaser-create-tag-action/
+# https://pkg.go.dev/github.com/pantheon-systems/autotag#section-readme
+name: release
+
+on:
+
+  push:
+    branches:
+      - main
+
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+permissions:
+  # Need to write releases.
+  contents: write
+  # Need for ghcr access.
+  packages: write
+
+jobs:
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          # This is important, otherwise it won't checkout the full tree (i.e. no previous tags).
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.4
+          cache: true
+
+      # Login to ghcr.
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: anchore/sbom-action/download-syft@v0.15.0
+
+      - run: curl -sL https://git.io/autotag-install | sudo sh -s -- -b /usr/bin
+
+      # Increment version and tag.
+      - run: autotag
+
+      - uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

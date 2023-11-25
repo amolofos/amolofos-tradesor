@@ -1,0 +1,35 @@
+---
+# https://github.com/goreleaser/goreleaser-example-supply-chain/blob/main/.github
+name: pull requests
+
+on:
+
+  pull_request:
+    branches:
+      - main
+      - release/*
+
+  # Allows you to run this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.4
+          cache: true
+
+      # We have the order reversed here so we have fast feedback
+      # on the actuall build.
+      - run: ./scripts/build.sh
+      - run: ./scripts/test.sh
+      - run: ./scripts/fmt.sh
+      - run: ./scripts/lint.sh

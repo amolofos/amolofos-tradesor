@@ -1,0 +1,27 @@
+---
+# https://github.com/goreleaser/goreleaser-example-supply-chain/blob/main/.github
+name: build
+
+on:
+  branches:
+    - main
+
+permissions:
+  contents: read
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.4
+          cache: true
+
+      - run: ./scripts/fmt.sh
+      - run: ./scripts/lint.sh
+      - run: ./scripts/build.sh
+      - run: ./scripts/test.sh
