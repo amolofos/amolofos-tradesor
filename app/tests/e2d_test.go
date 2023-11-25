@@ -1,12 +1,13 @@
 package tests
 
 import (
-	"amolofos/tradesor/pkg/models/models_outputFormat"
-	"amolofos/tradesor/pkg/services/service_exporter"
-	"amolofos/tradesor/pkg/services/service_importer"
-	"amolofos/tradesor/pkg/services/service_transformer"
 	"os"
 	"testing"
+
+	"github.com/amolofos/tradesor/pkg/models/models_outputFormat"
+	"github.com/amolofos/tradesor/pkg/services/service_exporter"
+	"github.com/amolofos/tradesor/pkg/services/service_importer"
+	"github.com/amolofos/tradesor/pkg/services/service_transformer"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -1,10 +1,10 @@
-package cmd
+package cli
 
 import (
 	"fmt"
 	"os"
 
-	"amolofos/tradesor/cmd/transform"
+	"github.com/amolofos/tradesor/cli/transform"
 
 	"github.com/spf13/cobra"
 )

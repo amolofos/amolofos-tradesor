@@ -1,8 +1,8 @@
 package wordpress_services
 
 import (
-	"amolofos/tradesor/pkg/features/tradesor/tradesor_models"
-	"amolofos/tradesor/pkg/models/models_csv"
+	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
+	"github.com/amolofos/tradesor/pkg/models/models_csv"
 )
 
 type Wordpress struct{}

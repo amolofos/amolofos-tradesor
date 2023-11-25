@@ -10,8 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"amolofos/tradesor/pkg/conf"
-	"amolofos/tradesor/pkg/features/tradesor/tradesor_models"
+	"github.com/amolofos/tradesor/pkg/conf"
+	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
 )
 
 type Importer struct {

@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"strings"
 
-	"amolofos/tradesor/pkg/models/models_csv"
+	"github.com/amolofos/tradesor/pkg/models/models_csv"
 )
 
 type Exporter struct {

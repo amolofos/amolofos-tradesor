@@ -1,9 +1,10 @@
 package service_importer
 
 import (
-	"amolofos/tradesor/pkg/conf"
-	"amolofos/tradesor/pkg/features/tradesor/tradesor_models"
 	"path/filepath"
+
+	"github.com/amolofos/tradesor/pkg/conf"
+	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
 
 	"github.com/stretchr/testify/mock"
 

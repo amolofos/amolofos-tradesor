@@ -1,13 +1,14 @@
 package facebook_services
 
 import (
-	"amolofos/tradesor/pkg/features/facebook/facebook_conf"
-	"amolofos/tradesor/pkg/features/tradesor/tradesor_models"
-	"amolofos/tradesor/pkg/models/models_csv"
 	"fmt"
 	"log/slog"
 	"math"
 	"strings"
+
+	"github.com/amolofos/tradesor/pkg/features/facebook/facebook_conf"
+	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
+	"github.com/amolofos/tradesor/pkg/models/models_csv"
 )
 
 type Facebook struct {

@@ -1,11 +1,11 @@
 package service_transformer
 
 import (
-	"amolofos/tradesor/pkg/features/facebook/facebook_services"
-	"amolofos/tradesor/pkg/features/tradesor/tradesor_models"
-	"amolofos/tradesor/pkg/features/wordpress/wordpress_services"
-	"amolofos/tradesor/pkg/models/models_csv"
-	"amolofos/tradesor/pkg/models/models_outputFormat"
+	"github.com/amolofos/tradesor/pkg/features/facebook/facebook_services"
+	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
+	"github.com/amolofos/tradesor/pkg/features/wordpress/wordpress_services"
+	"github.com/amolofos/tradesor/pkg/models/models_csv"
+	"github.com/amolofos/tradesor/pkg/models/models_outputFormat"
 )
 
 type Transformer struct{}
