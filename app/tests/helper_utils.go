@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path"
@@ -16,32 +17,12 @@ func isContentTheSame(dirFirst, dirSecond string, failFast bool) (result bool, e
 	dataSecond := map[string]string{}
 
 	// 1. Get all the files and their hashes.
-	errFirst := filepath.Walk(dirFirst, func(file string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			hashFilename, hashContent, errHash := hashFileContent(file)
-			if errHash != nil {
-				return errHash
-			}
-
-			dataFirst[hashFilename] = hashContent
-		}
-		return err
-	})
+	errFirst := walkDir(dirFirst, dataFirst)
 	if errFirst != nil {
 		return false, errFirst
 	}
 
-	errSecond := filepath.Walk(dirSecond, func(file string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			hashFilename, hashContent, errHash := hashFileContent(file)
-			if errHash != nil {
-				return errHash
-			}
-
-			dataSecond[hashFilename] = hashContent
-		}
-		return err
-	})
+	errSecond := walkDir(dirSecond, dataSecond)
 	if errSecond != nil {
 		return false, errSecond
 	}
@@ -63,6 +44,37 @@ func isContentTheSame(dirFirst, dirSecond string, failFast bool) (result bool, e
 	}
 
 	return resultCount && resultContent, nil
+}
+
+func walkDir(dir string, dirMap map[string]string) error {
+	return filepath.WalkDir(dir, func(file string, d fs.DirEntry, err error) error {
+		if err != nil {
+			slog.Error(fmt.Sprintf("Filewalk against %s file encountered error %s.", file, err.Error()))
+			return err
+		}
+
+		if d.IsDir() {
+			return err
+		}
+
+		hiddenFile, err := isHiddenFile(file)
+		if hiddenFile || err != nil {
+			return err
+		}
+
+		hashFilename, hashContent, errHash := hashFileContent(file)
+		if errHash != nil {
+			return errHash
+		}
+
+		dirMap[hashFilename] = hashContent
+		return nil
+	})
+}
+
+func isHiddenFile(file string) (bool, error) {
+	fileName := path.Base(file)
+	return fileName[0] == '.', nil
 }
 
 func hashFileContent(file string) (hashFilename, hashContent string, err error) {

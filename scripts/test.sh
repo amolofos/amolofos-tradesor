@@ -4,6 +4,8 @@ log () {
   echo "[`date +'%Y-%m-%d %H-%M-%S'`] $@"
 }
 
+mkdir -p ./build/test/
+
 log "go vet"
 go vet -C app ./...
 
