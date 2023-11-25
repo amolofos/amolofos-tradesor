@@ -53,7 +53,7 @@ jobs:
       - run: curl -sL https://git.io/autotag-install | sudo sh -s -- -b /usr/bin
 
       # Increment version and tag.
-      - run: autotag
+      - run: autotag --scheme=conventional
 
       - uses: goreleaser/goreleaser-action@v5
         with:
