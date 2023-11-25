@@ -6,9 +6,9 @@ import (
 	"github.com/spf13/cobra"
 
 	"amolofos/tradesor/pkg/models/models_outputFormat"
-	"amolofos/tradesor/pkg/services/loader"
-	"amolofos/tradesor/pkg/services/transformer"
-	"amolofos/tradesor/pkg/services/unloader"
+	"amolofos/tradesor/pkg/services/service_exporter"
+	"amolofos/tradesor/pkg/services/service_importer"
+	"amolofos/tradesor/pkg/services/service_transformer"
 )
 
 var (
@@ -29,32 +29,27 @@ func init() {
 }
 
 func transform(cmd *cobra.Command, args []string) {
+	var importer = &service_importer.Importer{}
+	importer.Init()
 
-	slog.Info(cmd.Flag("catalog").Value.String())
-	slog.Info(cmd.Flag("outputFormat").Value.String())
-	slog.Info(cmd.Flag("outputTo").Value.String())
+	var transformer = &service_transformer.Transformer{}
+	transformer.Init()
 
-	var l = &loader.Loader{}
-	l.Init()
+	var exporter = &service_exporter.Exporter{}
+	exporter.Init()
 
-	var t = &transformer.Transformer{}
-	t.Init()
-
-	var u = &unloader.Unloader{}
-	u.Init()
-
-	doc, errLoad := l.Load(cmd.Flag("catalog").Value.String())
-	if errLoad != nil {
-		slog.Error("Failed to load document with error ", errLoad)
+	doc, errImport := importer.Import(cmd.Flag("catalog").Value.String())
+	if errImport != nil {
+		slog.Error("Failed to import document with error ", errImport)
 	}
 
-	out, errTransform := t.Transform(doc, models_outputFormat.OutputFormat(cmd.Flag("outputFormat").Value.String()))
+	out, errTransform := transformer.Transform(doc, models_outputFormat.OutputFormat(cmd.Flag("outputFormat").Value.String()))
 	if errTransform != nil {
 		slog.Error("Failed to transform document with error ", errTransform)
 	}
 
-	errUnload := u.Unload(out, cmd.Flag("outputTo").Value.String())
-	if errUnload != nil {
-		slog.Error("Failed to unload document with error ", errUnload)
+	errExport := exporter.Export(out, cmd.Flag("outputTo").Value.String())
+	if errExport != nil {
+		slog.Error("Failed to export document with error ", errExport)
 	}
 }

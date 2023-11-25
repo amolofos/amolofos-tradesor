@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tradesor>
+  <created_at>2023-11-23 06:02</created_at>
+  <products>
+    <product>
+      <id>35133</id>
+      <ParentProductID>0</ParentProductID>
+      <name><![CDATA[Mπαταρίες AG7/LR927H/395A - 1.5V - 10pcs - 681071]]></name>
+      <Sku>681071</Sku>
+      <Content><![CDATA[<p>Σετ 5Χ μπαταρίες τύπου AG7/LR927H/395A - 1.5V</p>]]></Content>
+      <image>https://www.tradesor.gr/wp-content/uploads/2023/04/1-28.png</image>
+      <gallery>https://www.tradesor.gr/wp-content/uploads/2023/04/σετ-5χ-μπαταρίες-τύπου-ag7lr927h395a-15v.jpg,</gallery>
+      <category><![CDATA[ΦΩΤΙΣΜΟΣ & ΕΝΕΡΓΕΙΑ>Μπαταρίες>Μπαταρίες ρολογιών]]></category>
+      <marketing/>
+      <mpn>6927799681071</mpn>
+      <RegularPrice>0.50</RegularPrice>
+      <SuggestedRetailPrice>0.9</SuggestedRetailPrice>
+      <color>No Color</color>
+      <manufacturer>OEM</manufacturer>
+      <StockStatus>instock</StockStatus>
+      <Stock>20</Stock>
+      <weight>0.1</weight>
+      <ShippingLeadTime>1</ShippingLeadTime>
+    </product>
+  </products>
+</tradesor>

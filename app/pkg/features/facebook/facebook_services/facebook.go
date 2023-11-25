@@ -5,6 +5,7 @@ import (
 	"amolofos/tradesor/pkg/features/tradesor/tradesor_models"
 	"amolofos/tradesor/pkg/models/models_csv"
 	"fmt"
+	"log/slog"
 	"math"
 	"strings"
 )
@@ -61,5 +62,6 @@ func (f *Facebook) TransformToCsv(xmlDoc *tradesor_models.Xml) (csvDoc *models_c
 		})
 	}
 
+	slog.Info(fmt.Sprintf("Transformed %d products from %d categories.", len(xmlProducts), len(categories)))
 	return
 }
