@@ -5,7 +5,7 @@ const DESCRIPTION_MAX_LENGTH = 9999
 const BRAND_MAX_LENGTH = 100
 const PRICE_FMT_PATTERN = "%s %s"
 
-var CsvHeader = []string{
+var Header = []string{
 	"id",
 	"title",
 	"description",

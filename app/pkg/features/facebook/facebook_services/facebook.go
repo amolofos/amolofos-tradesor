@@ -7,8 +7,10 @@ import (
 	"strings"
 
 	"github.com/amolofos/tradesor/pkg/features/facebook/facebook_conf"
+	"github.com/amolofos/tradesor/pkg/features/facebook/facebook_models"
 	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
-	"github.com/amolofos/tradesor/pkg/models/models_csv"
+
+	"github.com/amolofos/tradesor/pkg/interfaces/canonical_models"
 )
 
 type Facebook struct {
@@ -16,25 +18,24 @@ type Facebook struct {
 }
 
 func (f *Facebook) Init() {
-	f.replacer = strings.NewReplacer(" ", "", "/", "")
+	f.replacer = strings.NewReplacer(" ", "", "/", "", ">", "_")
 }
 
-func (f *Facebook) TransformToCsv(xmlDoc *tradesor_models.Xml) (csvDoc *models_csv.Csv, err error) {
-	categories := map[string]int{}
+func (f *Facebook) Transform(xmlDoc *tradesor_models.Xml) (doc canonical_models.CanonicalModel, err error) {
+	categoriesMap := map[string]bool{}
+	categories := []string{}
 
-	csvDoc = &models_csv.Csv{
-		Header: facebook_conf.CsvHeader,
-	}
+	facebookDoc := &facebook_models.Facebook{}
+	facebookDoc.Init()
 
 	xmlProducts := xmlDoc.Tradesor.Products.ProductList
 
 	for _, v := range xmlProducts {
 		category := f.replacer.Replace(v.Category)
-		_, existsCategory := categories[category]
+		_, existsCategory := categoriesMap[category]
 		if !existsCategory {
-			categories[category] = 0
-		} else {
-			categories[category] = categories[category] + 1
+			categoriesMap[category] = true
+			categories = append(categories, category)
 		}
 
 		availability, existsAvailability := facebook_conf.StockStatusMap[v.StockStatus]
@@ -46,7 +47,8 @@ func (f *Facebook) TransformToCsv(xmlDoc *tradesor_models.Xml) (csvDoc *models_c
 		descriptionMaxLength := int(math.Min(float64(len(v.Name)), facebook_conf.DESCRIPTION_MAX_LENGTH))
 		brandMaxLength := int(math.Min(float64(len(v.Manufacturer)), facebook_conf.BRAND_MAX_LENGTH))
 
-		csvDoc.Products = append(csvDoc.Products, models_csv.CsvProduct{
+		facebookDoc.Products = append(facebookDoc.Products, facebook_models.FacebookProduct{
+			Category:            category,
 			Id:                  v.Id,
 			Title:               v.Name[:titleMaxLength],
 			Description:         v.Name[:descriptionMaxLength],
@@ -63,6 +65,10 @@ func (f *Facebook) TransformToCsv(xmlDoc *tradesor_models.Xml) (csvDoc *models_c
 		})
 	}
 
+	facebookDoc.Categories = categories
+	doc = facebookDoc
+
 	slog.Info(fmt.Sprintf("Transformed %d products from %d categories.", len(xmlProducts), len(categories)))
+
 	return
 }

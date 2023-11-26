@@ -7,10 +7,10 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 
-	"github.com/amolofos/tradesor/pkg/models/models_csv"
+	"github.com/amolofos/tradesor/pkg/interfaces/canonical_models"
+	"github.com/amolofos/tradesor/pkg/models/models_outputFormat"
 )
 
 type Exporter struct {
@@ -21,65 +21,51 @@ func (u *Exporter) Init() {
 	u.replacer = strings.NewReplacer(" ", "", "/", "", ">", "_")
 }
 
-func (u *Exporter) Export(csvDoc *models_csv.Csv, outputTo string) (err error) {
+func (u *Exporter) Export(doc canonical_models.CanonicalModel, outputFormat models_outputFormat.OutputFormat, outputTo string) (err error) {
 	//remoteUrl, err := url.ParseRequestURI(outputTo)
 	//if err != nil {
-	//	u.exportToLocalDir(csvDoc, outputTo)
+	//	u.exportToLocalDir(doc, outputTo)
 	//	return
 	//}
 	//
-	//u.exportToWordpress(csvDoc, remoteUrl)
+	//u.exportToWordpress(doc, remoteUrl)
 	u.createOutputDir(outputTo)
-	u.exportToLocalDir(csvDoc, outputTo)
+	u.exportToLocalDir(doc, outputFormat, outputTo)
 
 	return
 }
 
-func (u *Exporter) exportToLocalDir(csvDoc *models_csv.Csv, outputTo string) {
-	slog.Info(fmt.Sprintf("Exporting %d products.", len(csvDoc.Products)))
-
-	csvMap := map[string][][]string{}
-	for _, v := range csvDoc.Products {
-		ref := reflect.ValueOf(v)
-		row := make([]string, ref.NumField())
-
-		for j := 0; j < ref.NumField(); j++ {
-			row[j] = ref.Field(j).String()
-		}
-
-		category := u.replacer.Replace(v.FbProductCategory)
-
-		_, existsCategoryCsv := csvMap[category]
-		if !existsCategoryCsv {
-			csvMap[category] = [][]string{}
-			csvMap[category] = append(csvMap[category], csvDoc.Header)
-		}
-
-		csvMap[category] = append(csvMap[category], row)
-	}
-
-	for category, data := range csvMap {
+func (u *Exporter) exportToLocalDir(doc canonical_models.CanonicalModel, outputFormat models_outputFormat.OutputFormat, outputTo string) {
+	categories := doc.GetCategories()
+	for _, category := range categories {
 		categoryFile := filepath.Join(outputTo, category+".csv")
+		header := doc.GetHeader()
+
+		data, errProducts := doc.GetProductsForCategoryFormatted(outputFormat, category)
+		if errProducts != nil {
+			slog.Error("Error getting products for category: ", category, " with error: ", errProducts)
+		}
 
 		fo, errFileOut := os.Create(categoryFile)
 		if errFileOut != nil {
 			slog.Error("Error creating category file: ", categoryFile, " with error: ", errFileOut)
 		}
+		defer fo.Close()
 
 		csvWrite := csv.NewWriter(fo)
-		csvWrite.WriteAll(data)
-		fo.Close()
-
+		csvWrite.Write(header)
 		errCsvWrite := csvWrite.Error()
 		if errCsvWrite != nil {
 			slog.Error("Error writing category file: ", categoryFile, " with error: ", errCsvWrite)
 		}
+
+		fo.WriteString(data)
 	}
 
-	slog.Info(fmt.Sprintf("Created %d csv files.", len(csvMap)))
+	slog.Info(fmt.Sprintf("Created %d csv files.", len(categories)))
 }
 
-func (u *Exporter) exportToWordpress(csvDoc *models_csv.Csv, remoteUrl *url.URL) {
+func (u *Exporter) exportToWordpress(doc canonical_models.CanonicalModel, remoteUrl *url.URL) {
 	return
 }
 

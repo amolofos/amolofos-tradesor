@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/amolofos/tradesor/pkg/models/models_outputFormat"
+	"github.com/amolofos/tradesor/pkg/models/models_outputType"
 	"github.com/amolofos/tradesor/pkg/services/service_exporter"
 	"github.com/amolofos/tradesor/pkg/services/service_importer"
 	"github.com/amolofos/tradesor/pkg/services/service_transformer"
@@ -18,7 +19,7 @@ func TestEnd2End(t *testing.T) {
 		name            string
 		catalog         string
 		outputTo        string
-		outputFormat    models_outputFormat.OutputFormat
+		outputType      models_outputType.OutputType
 		expectedDataDir string
 		failFast        bool
 	}{
@@ -27,7 +28,7 @@ func TestEnd2End(t *testing.T) {
 			name:            "Facebook, empty catalog",
 			catalog:         "./data/tradesor_data-no_product.xml",
 			outputTo:        "../../build/test/tests_tradesor_data-no_product",
-			outputFormat:    models_outputFormat.Facebook,
+			outputType:      models_outputType.Facebook,
 			expectedDataDir: "./data/tradesor_data-no_product_expected_csvs",
 			failFast:        false,
 		},
@@ -36,7 +37,7 @@ func TestEnd2End(t *testing.T) {
 			name:            "Facebook, one product catalog",
 			catalog:         "./data/tradesor_data-one_product.xml",
 			outputTo:        "../../build/test/tests_tradesor_data-one_product",
-			outputFormat:    models_outputFormat.Facebook,
+			outputType:      models_outputType.Facebook,
 			expectedDataDir: "./data/tradesor_data-one_product_expected_csvs",
 			failFast:        false,
 		},
@@ -45,7 +46,7 @@ func TestEnd2End(t *testing.T) {
 			name:            "Facebook, full catalog",
 			catalog:         "./data/tradesor_data-full_catalog.xml",
 			outputTo:        "../../build/test/tests_tradesor_data-full_catalog",
-			outputFormat:    models_outputFormat.Facebook,
+			outputType:      models_outputType.Facebook,
 			expectedDataDir: "./data/tradesor_data-full_catalog_expected_csvs",
 			failFast:        false,
 		},
@@ -74,10 +75,10 @@ func TestEnd2End(t *testing.T) {
 			doc, errImport := importer.Import(tc.catalog)
 			assert.Nil(t, errImport)
 
-			out, errTransform := transformer.Transform(doc, tc.outputFormat)
+			out, errTransform := transformer.Transform(doc, tc.outputType)
 			assert.Nil(t, errTransform)
 
-			errExport := exporter.Export(out, tc.outputTo)
+			errExport := exporter.Export(out, models_outputFormat.CSV, tc.outputTo)
 			assert.Nil(t, errExport)
 
 			isContentTheSame, errCompare := isContentTheSame(tc.outputTo, tc.expectedDataDir, tc.failFast)

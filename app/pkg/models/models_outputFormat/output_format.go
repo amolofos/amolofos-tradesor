@@ -4,23 +4,23 @@ type OutputFormat string
 
 const (
 	Undefined OutputFormat = ""
-	Facebook  OutputFormat = "facebook"
-	Wordpress OutputFormat = "wordpress"
+	CSV       OutputFormat = "csv"
+	XML       OutputFormat = "xml"
 )
 
-func (e *OutputFormat) String() string {
-	return string(*e)
+func (o *OutputFormat) String() string {
+	return string(*o)
 }
 
-func (e *OutputFormat) Set(v string) error {
-	*e = OutputFormat(v)
+func (o *OutputFormat) Set(v string) error {
+	*o = OutputFormat(v)
 	return nil
 }
 
-func (e *OutputFormat) Type() string {
+func (o *OutputFormat) Type() string {
 	return "OutputFormat"
 }
 
 func GetAllSupportedValues() string {
-	return "[facebook|wordpress]"
+	return "[csv|xml]"
 }
