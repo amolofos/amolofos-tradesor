@@ -1,4 +1,4 @@
-package service_importer
+package services
 
 import (
 	"encoding/xml"
@@ -11,34 +11,37 @@ import (
 	"path/filepath"
 
 	"github.com/amolofos/tradesor/pkg/conf"
-	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
+	"github.com/amolofos/tradesor/pkg/features/tradesor"
 )
 
 type Importer struct {
 	localFile string
 }
 
-func (l *Importer) Init() {
-	l.localFile = filepath.Join(conf.LOCAL_BUILD_DIR, conf.LOCAL_FILE)
+func NewImporter() (i *Importer) {
+	i = &Importer{}
+	i.localFile = filepath.Join(conf.LOCAL_BUILD_DIR, conf.LOCAL_FILE)
+	return
 }
 
-func (l *Importer) Import(catalog string) (xmlDoc *tradesor_models.Xml, err error) {
+func (i *Importer) Import(catalog string) (nProducts int, xmlDoc *tradesor.ModelXml, err error) {
 	slog.Info(fmt.Sprintf("Importing catalog %s.", catalog))
 
 	_, errParseUrl := url.ParseRequestURI(catalog)
 	if errParseUrl != nil {
-		return l.importFromLocalFile(catalog)
+		return i.importFromLocalFile(catalog)
 	}
 
-	file, errDownload := l.downloadFileFromUrl(catalog)
+	file, errDownload := i.downloadFileFromUrl(catalog)
 	if errDownload != nil {
-		return nil, errDownload
+		err = errDownload
+		return
 	}
 
-	return l.importFromLocalFile(file)
+	return i.importFromLocalFile(file)
 }
 
-func (l *Importer) downloadFileFromUrl(catalog string) (file string, err error) {
+func (i *Importer) downloadFileFromUrl(catalog string) (file string, err error) {
 	resp, errGet := http.Get(catalog)
 	if errGet != nil {
 		slog.Error("Error downloading catalog: ", catalog, " with error: ", errGet)
@@ -46,35 +49,38 @@ func (l *Importer) downloadFileFromUrl(catalog string) (file string, err error) 
 	}
 	defer resp.Body.Close()
 
-	f, errFile := os.Create(l.localFile)
+	f, errFile := os.Create(i.localFile)
 	if errFile != nil {
-		slog.Error("Error storing the catalog locally in ", l.localFile, " with error: ", errFile)
+		slog.Error("Error storing the catalog locally in ", i.localFile, " with error: ", errFile)
 		return "", errFile
 	}
 	defer f.Close()
 
 	_, err = io.Copy(f, resp.Body)
-	return l.localFile, err
+	return i.localFile, err
 }
 
-func (l *Importer) importFromLocalFile(file string) (xmlDoc *tradesor_models.Xml, err error) {
+func (i *Importer) importFromLocalFile(file string) (nProducts int, xmlDoc *tradesor.ModelXml, err error) {
 	xmlFile, errXmlOpen := os.Open(file)
 	if errXmlOpen != nil {
 		slog.Error("Error opening file:", errXmlOpen)
-		return nil, errXmlOpen
+		err = errXmlOpen
+		return
 	}
 	defer xmlFile.Close()
 
 	xmlRead, errXmlRead := io.ReadAll(xmlFile)
 	if errXmlRead != nil {
 		slog.Error("Error reading file:", errXmlRead)
-		return nil, errXmlRead
+		err = errXmlRead
+		return
 	}
 
-	xmlDoc = &tradesor_models.Xml{}
+	xmlDoc = &tradesor.ModelXml{}
 	xml.Unmarshal(xmlRead, &xmlDoc.Tradesor)
 
 	xmlProducts := xmlDoc.Tradesor.Products.ProductList
-	slog.Info(fmt.Sprintf("Imported %d products.", len(xmlProducts)))
+	nProducts = len(xmlProducts)
+	slog.Info(fmt.Sprintf("Imported %d products.", nProducts))
 	return
 }

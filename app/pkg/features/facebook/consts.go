@@ -1,4 +1,4 @@
-package facebook_conf
+package facebook
 
 const TITLE_MAX_LENGTH = 65
 const DESCRIPTION_MAX_LENGTH = 9999

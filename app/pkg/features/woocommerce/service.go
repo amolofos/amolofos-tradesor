@@ -1,29 +1,33 @@
-package woocommerce_services
+package woocommerce
 
 import (
 	"fmt"
 	"log/slog"
 	"strings"
 
-	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
-	"github.com/amolofos/tradesor/pkg/features/woocommerce/woocommerce_models"
-
+	"github.com/amolofos/tradesor/pkg/features/tradesor"
 	"github.com/amolofos/tradesor/pkg/interfaces/canonical_models"
 )
 
-type Woocommerce struct {
+type WoocommerceService struct {
 	replacer *strings.Replacer
 }
 
-func (w *Woocommerce) Init() {
+func NewWoocommerceService() (w *WoocommerceService, err error) {
+	w = &WoocommerceService{}
+	w.Init()
+	return
+}
+
+func (w *WoocommerceService) Init() {
 	w.replacer = strings.NewReplacer(" ", "", "/", "", ">", "_")
 }
 
-func (w *Woocommerce) Transform(xmlDoc *tradesor_models.Xml) (doc canonical_models.CanonicalModel, err error) {
+// Transformer interface.
+func (w *WoocommerceService) CanonicalModel(xmlDoc *tradesor.ModelXml) (nProducts int, doc canonical_models.CanonicalModel, err error) {
 	categories := map[string]int{}
 
-	woocommerceDoc := &woocommerce_models.Woocommerce{}
-	woocommerceDoc.Init()
+	woocommerceDoc := NewWoocommerceModel()
 
 	xmlProducts := xmlDoc.Tradesor.Products.ProductList
 
@@ -38,6 +42,12 @@ func (w *Woocommerce) Transform(xmlDoc *tradesor_models.Xml) (doc canonical_mode
 	}
 
 	slog.Info(fmt.Sprintf("Transformed %d products from %d categories.", len(xmlProducts), len(categories)))
+	nProducts = len(xmlProducts)
 	doc = woocommerceDoc
+	return
+}
+
+// Exporter interface.
+func (w *WoocommerceService) Write(doc canonical_models.CanonicalModel) (err error) {
 	return
 }

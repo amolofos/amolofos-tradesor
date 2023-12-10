@@ -1,4 +1,4 @@
-package facebook_services
+package facebook
 
 import (
 	"fmt"
@@ -6,27 +6,30 @@ import (
 	"math"
 	"strings"
 
-	"github.com/amolofos/tradesor/pkg/features/facebook/facebook_conf"
-	"github.com/amolofos/tradesor/pkg/features/facebook/facebook_models"
-	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
-
+	"github.com/amolofos/tradesor/pkg/features/tradesor"
 	"github.com/amolofos/tradesor/pkg/interfaces/canonical_models"
 )
 
-type Facebook struct {
+type FacebookService struct {
 	replacer *strings.Replacer
 }
 
-func (f *Facebook) Init() {
+func NewFacebookService() (f *FacebookService, err error) {
+	f = &FacebookService{}
+	f.Init()
+	return
+}
+
+func (f *FacebookService) Init() {
 	f.replacer = strings.NewReplacer(" ", "", "/", "", ">", "_")
 }
 
-func (f *Facebook) Transform(xmlDoc *tradesor_models.Xml) (doc canonical_models.CanonicalModel, err error) {
+// Transformer interface.
+func (f *FacebookService) CanonicalModel(xmlDoc *tradesor.ModelXml) (nProducts int, doc canonical_models.CanonicalModel, err error) {
 	categoriesMap := map[string]bool{}
 	categories := []string{}
 
-	facebookDoc := &facebook_models.Facebook{}
-	facebookDoc.Init()
+	facebookDoc := NewFacebookModel()
 
 	xmlProducts := xmlDoc.Tradesor.Products.ProductList
 
@@ -38,23 +41,23 @@ func (f *Facebook) Transform(xmlDoc *tradesor_models.Xml) (doc canonical_models.
 			categories = append(categories, category)
 		}
 
-		availability, existsAvailability := facebook_conf.StockStatusMap[v.StockStatus]
+		availability, existsAvailability := StockStatusMap[v.StockStatus]
 		if !existsAvailability {
-			availability = facebook_conf.StockStatusMap["outofstock"]
+			availability = StockStatusMap["outofstock"]
 		}
 
-		titleMaxLength := int(math.Min(float64(len(v.Name)), facebook_conf.TITLE_MAX_LENGTH))
-		descriptionMaxLength := int(math.Min(float64(len(v.Name)), facebook_conf.DESCRIPTION_MAX_LENGTH))
-		brandMaxLength := int(math.Min(float64(len(v.Manufacturer)), facebook_conf.BRAND_MAX_LENGTH))
+		titleMaxLength := int(math.Min(float64(len(v.Name)), TITLE_MAX_LENGTH))
+		descriptionMaxLength := int(math.Min(float64(len(v.Name)), DESCRIPTION_MAX_LENGTH))
+		brandMaxLength := int(math.Min(float64(len(v.Manufacturer)), BRAND_MAX_LENGTH))
 
-		facebookDoc.Products = append(facebookDoc.Products, facebook_models.FacebookProduct{
+		facebookDoc.products = append(facebookDoc.products, Product{
 			Category:            category,
 			Id:                  v.Id,
 			Title:               v.Name[:titleMaxLength],
 			Description:         v.Name[:descriptionMaxLength],
 			Availability:        availability,
 			Condition:           "new",
-			Price:               fmt.Sprintf(facebook_conf.PRICE_FMT_PATTERN, v.SuggestedRetailPrice, "EUR"),
+			Price:               fmt.Sprintf(PRICE_FMT_PATTERN, v.SuggestedRetailPrice, "EUR"),
 			Link:                "",
 			ImageLink:           v.Image,
 			Brand:               v.Manufacturer[:brandMaxLength],
@@ -65,10 +68,10 @@ func (f *Facebook) Transform(xmlDoc *tradesor_models.Xml) (doc canonical_models.
 		})
 	}
 
-	facebookDoc.Categories = categories
+	facebookDoc.categories = categories
+	nProducts = len(facebookDoc.products)
 	doc = facebookDoc
 
 	slog.Info(fmt.Sprintf("Transformed %d products from %d categories.", len(xmlProducts), len(categories)))
-
 	return
 }

@@ -1,4 +1,4 @@
-package woocommerce_conf
+package woocommerce
 
 var Header = []string{
 	"id",

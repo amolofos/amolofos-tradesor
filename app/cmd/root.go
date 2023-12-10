@@ -1,10 +1,10 @@
-package cli
+package cmd
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/amolofos/tradesor/cli/transform"
+	"github.com/amolofos/tradesor/cmd/transform"
 
 	"github.com/spf13/cobra"
 )
@@ -18,7 +18,12 @@ var rootCmd = &cobra.Command{
 	Use:   "tradesor",
 	Short: "tradesor - a simple CLI to transform and tradesor xml data",
 	Long:  "tradesor is a simple CLI to transform and tradesor xml data",
-	Run:   func(cmd *cobra.Command, args []string) {},
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			cmd.Help()
+			os.Exit(0)
+		}
+	},
 }
 
 func init() {

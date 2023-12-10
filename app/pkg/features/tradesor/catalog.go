@@ -1,19 +1,19 @@
-package tradesor_models
+package tradesor
+
+type ModelXml struct {
+	Tradesor Xml `xml:"tradesor"`
+}
 
 type Xml struct {
-	Tradesor XmlTradesor `xml:"tradesor"`
+	CreatedAt string   `xml:"created_at"`
+	Products  Products `xml:"products"`
 }
 
-type XmlTradesor struct {
-	CreatedAt string      `xml:"created_at"`
-	Products  XmlProducts `xml:"products"`
+type Products struct {
+	ProductList []Product `xml:"product"`
 }
 
-type XmlProducts struct {
-	ProductList []XmlProduct `xml:"product"`
-}
-
-type XmlProduct struct {
+type Product struct {
 	Id                   string `xml:"id"`
 	ParentProductID      string `xml:"ParentProductID"`
 	Name                 string `xml:"name"`
@@ -34,6 +34,6 @@ type XmlProduct struct {
 	ShippingLeadTime     string `xml:"ShippingLeadTime"`
 }
 
-func (p *XmlProduct) String() (str string) {
+func (p *Product) String() (str string) {
 	return p.Category
 }

@@ -6,9 +6,12 @@ import (
 
 type CanonicalModel interface {
 	Init()
-	GetHeader() []string
-	GetCategories() []string
-	GetProductsFormatted(format models_outputFormat.OutputFormat) (output string, err error)
-	GetProductsForCategory(category string) (products [][]string)
-	GetProductsForCategoryFormatted(format models_outputFormat.OutputFormat, category string) (output string, err error)
+
+	Header() []string
+	Categories() []string
+	ProductIds(category string) (productIds []string)
+	Products(category string) (products [][]string)
+
+	FormatProduct(product string, format models_outputFormat.OutputFormat) (output string, err error)
+	FormatProducts(category string, format models_outputFormat.OutputFormat) (output string, err error)
 }
