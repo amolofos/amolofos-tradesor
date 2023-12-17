@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/amolofos/tradesor/cmd/utils"
 	"github.com/amolofos/tradesor/pkg/models/models_outputFormat"
 	"github.com/amolofos/tradesor/pkg/models/models_outputType"
 	"github.com/amolofos/tradesor/pkg/services"
@@ -19,7 +20,7 @@ var (
 )
 
 var TransformCmd = &cobra.Command{
-	Use:   "transform [--outputFormat xml|csv] [--outputType facebook|woocommerce]",
+	Use:   fmt.Sprintf("transform [--outputFormat %s] [--outputType %s]", models_outputFormat.GetAllSupportedValues(), models_outputType.GetAllSupportedValues()),
 	Short: "transform Tradesor catalog",
 	Long:  "transform Tradesor catalog",
 	Run:   transform,
@@ -32,6 +33,8 @@ func init() {
 }
 
 func transform(cmd *cobra.Command, args []string) {
+	utils.DefaultCmds(cmd, args)
+
 	var importer = services.NewImporter()
 	var transformer = services.NewTransformer()
 	var exporter = services.NewExporter()

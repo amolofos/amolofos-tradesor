@@ -72,6 +72,6 @@ func (f *FacebookService) CanonicalModel(xmlDoc *tradesor.ModelXml) (nProducts i
 	nProducts = len(facebookDoc.products)
 	doc = facebookDoc
 
-	slog.Info(fmt.Sprintf("Transformed %d products from %d categories.", len(xmlProducts), len(categories)))
+	slog.Info(fmt.Sprintf("FacebookService: Transformed %d products from %d categories.", nProducts, len(categories)))
 	return
 }

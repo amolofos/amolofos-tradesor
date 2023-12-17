@@ -30,20 +30,13 @@ func (e *Exporter) Export(doc canonical_models.CanonicalModel, outputFormat mode
 
 	exporter, err = e.exporter(outputTo)
 	if err != nil {
-		slog.Error(fmt.Sprintf("Failed to get exporter for output destination %s with %s error.", outputTo, err.Error()))
-		return
-	}
-
-	if exporter == nil {
-		errStr := fmt.Sprintf("Something went wrong. We could not create an exporter for destination %s.", outputTo)
-		slog.Error(errStr)
-		err = errors.New(errStr)
+		slog.Error(fmt.Sprintf("Exporter: Failed to get exporter for output destination %s with %s error.", outputTo, err.Error()))
 		return
 	}
 
 	var nProducts int
 	nProducts, err = exporter.Write(doc, outputFormat)
-	slog.Info(fmt.Sprintf("Exported %d products.", nProducts))
+	slog.Info(fmt.Sprintf("Exporter: Exported %d products.", nProducts))
 	return
 }
 
@@ -52,8 +45,11 @@ func (e *Exporter) exporter(outputTo string) (exporter exporter_interfaces.Expor
 	// 1. Do we have a url?
 	_, errUri := url.ParseRequestURI(outputTo)
 	if errUri == nil {
-		slog.Debug("Got a url, creating an http exporter.")
-		exporter, err = exporters.NewHttpExporter(outputTo)
+		slog.Debug("Exporter: Got a url, creating an http exporter.")
+
+		errStr := "Exporter: unfortunately http exporter is not supported yet"
+		slog.Error(errStr)
+		err = errors.New(errStr)
 		return
 	}
 
@@ -62,7 +58,7 @@ func (e *Exporter) exporter(outputTo string) (exporter exporter_interfaces.Expor
 	if err != nil {
 		return
 	}
-	slog.Debug("Got a directory, creating a file exporter.")
+	slog.Debug("Exporter: Got a directory, creating a file exporter.")
 	exporter, err = exporters.NewFileExporter(outputTo)
 
 	return
@@ -71,41 +67,3 @@ func (e *Exporter) exporter(outputTo string) (exporter exporter_interfaces.Expor
 func (e *Exporter) createOutputDir(dir string) error {
 	return os.MkdirAll(dir, 0770)
 }
-
-//
-//func (e *Exporter) exportToLocalDir(doc canonical_models.CanonicalModel, outputFormat models_outputFormat.OutputFormat, outputTo string) (err error) {
-//
-//	categories := doc.Categories()
-//	for _, category := range categories {
-//		categoryFile := filepath.Join(outputTo, category+".csv")
-//		header := doc.Header()
-//
-//		data, errProducts := doc.FormatProducts(category, outputFormat)
-//		if errProducts != nil {
-//			slog.Error("Error getting products for category: ", category, " with error: ", errProducts)
-//		}
-//
-//		fo, errFileOut := os.Create(categoryFile)
-//		if errFileOut != nil {
-//			slog.Error("Error creating category file: ", categoryFile, " with error: ", errFileOut)
-//		}
-//		defer fo.Close()
-//
-//		csvWrite := csv.NewWriter(fo)
-//		csvWrite.Write(header)
-//		errCsvWrite := csvWrite.Error()
-//		if errCsvWrite != nil {
-//			slog.Error("Error writing category file: ", categoryFile, " with error: ", errCsvWrite)
-//		}
-//
-//		fo.WriteString(data)
-//	}
-//
-//	slog.Info(fmt.Sprintf("Created %d csv files.", len(categories)))
-//	return
-//}
-//
-//func (e *Exporter) exportToRemote(doc canonical_models.CanonicalModel, remoteUrl *url.URL) (err error) {
-//	return
-//}
-//

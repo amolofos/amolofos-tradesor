@@ -5,7 +5,6 @@ type OutputFormat string
 const (
 	Undefined OutputFormat = ""
 	CSV       OutputFormat = "csv"
-	XML       OutputFormat = "xml"
 )
 
 func (o *OutputFormat) String() string {
@@ -22,5 +21,5 @@ func (o *OutputFormat) Type() string {
 }
 
 func GetAllSupportedValues() string {
-	return "[csv|xml]"
+	return "[csv]"
 }

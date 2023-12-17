@@ -9,9 +9,9 @@ type CanonicalModel interface {
 
 	Header() []string
 	Categories() []string
-	ProductIds(category string) (productIds []string)
-	Products(category string) (products [][]string)
+	ProductIds(category string) (productIds []string, err error)
+	Products(category string) (products [][]string, err error)
 
-	FormatProduct(product string, format models_outputFormat.OutputFormat) (output string, err error)
-	FormatProducts(category string, format models_outputFormat.OutputFormat) (output string, err error)
+	ExportHeader(outputFormat models_outputFormat.OutputFormat) (header string, err error)
+	Export(category string, outputFormat models_outputFormat.OutputFormat) (nProducts int, products string, err error)
 }

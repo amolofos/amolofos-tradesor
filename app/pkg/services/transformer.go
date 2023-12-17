@@ -11,7 +11,8 @@ import (
 
 	"github.com/amolofos/tradesor/pkg/features/facebook"
 	"github.com/amolofos/tradesor/pkg/features/tradesor"
-	"github.com/amolofos/tradesor/pkg/features/woocommerce"
+	"github.com/amolofos/tradesor/pkg/features/woocommerce/woocommerce_plugin_product_csv"
+	"github.com/amolofos/tradesor/pkg/features/woocommerce/woocommerce_plugin_webtoffee"
 )
 
 type Transformer struct{}
@@ -27,10 +28,13 @@ func (t *Transformer) Transform(xmlDoc *tradesor.ModelXml, outputType models_out
 	switch outputType {
 	case models_outputType.Facebook:
 		transformer, err = facebook.NewFacebookService()
-	case models_outputType.Woocommerce:
-		transformer, err = woocommerce.NewWoocommerceService()
+	case models_outputType.WoocommercePluginProductCsv:
+		transformer, err = woocommerce_plugin_product_csv.NewWoocommerceService()
+	case models_outputType.WoocommercePluginWebToffee:
+		transformer, err = woocommerce_plugin_webtoffee.NewWoocommerceService()
+
 	default:
-		errStr := fmt.Sprintf("Output type %s is not supported.", outputType)
+		errStr := fmt.Sprintf("Transformer: Output type %s is not supported.", outputType)
 		err = errors.New(errStr)
 	}
 

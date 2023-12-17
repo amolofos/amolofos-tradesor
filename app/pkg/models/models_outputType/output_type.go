@@ -3,9 +3,10 @@ package models_outputType
 type OutputType string
 
 const (
-	Undefined   OutputType = ""
-	Facebook    OutputType = "facebook"
-	Woocommerce OutputType = "woocommerce"
+	Undefined                   OutputType = ""
+	Facebook                    OutputType = "facebook"
+	WoocommercePluginProductCsv OutputType = "woo-product-csv"
+	WoocommercePluginWebToffee  OutputType = "woo-webtoffee"
 )
 
 func (e *OutputType) String() string {
@@ -22,5 +23,5 @@ func (e *OutputType) Type() string {
 }
 
 func GetAllSupportedValues() string {
-	return "[facebook|woocommerce]"
+	return "[facebook|woo-product-csv|woo-webtoffee]"
 }

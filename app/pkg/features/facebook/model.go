@@ -1,6 +1,13 @@
 package facebook
 
-import "github.com/amolofos/tradesor/pkg/models/models_outputFormat"
+import (
+	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/amolofos/tradesor/pkg/models/models_outputFormat"
+	"github.com/gocarina/gocsv"
+)
 
 type FacebookModel struct {
 	header     []string
@@ -40,11 +47,19 @@ func (f *FacebookModel) Header() []string {
 	return f.header
 }
 
+func (f *FacebookModel) SetHeader(header []string) {
+	f.header = header
+}
+
 func (f *FacebookModel) Categories() []string {
 	return f.categories
 }
 
-func (f *FacebookModel) ProductIds(category string) (productIds []string) {
+func (f *FacebookModel) SetCategories(categories []string) {
+	f.categories = categories
+}
+
+func (f *FacebookModel) ProductIds(category string) (productIds []string, err error) {
 	productIds = []string{}
 
 	for _, v := range f.products {
@@ -53,10 +68,10 @@ func (f *FacebookModel) ProductIds(category string) (productIds []string) {
 		}
 	}
 
-	return productIds
+	return
 }
 
-func (f *FacebookModel) Products(category string) (products [][]string) {
+func (f *FacebookModel) Products(category string) (products [][]string, err error) {
 	products = [][]string{}
 
 	for _, v := range f.products {
@@ -79,13 +94,52 @@ func (f *FacebookModel) Products(category string) (products [][]string) {
 		}
 	}
 
-	return products
-}
-
-func (f *FacebookModel) FormatProduct(productId string, format models_outputFormat.OutputFormat) (output string, err error) {
 	return
 }
 
-func (f *FacebookModel) FormatProducts(category string, format models_outputFormat.OutputFormat) (output string, err error) {
+func (f *FacebookModel) productsList(category string) (products []Product, err error) {
+	products = []Product{}
+
+	for _, v := range f.products {
+		if v.Category == category {
+			products = append(products, v)
+		}
+	}
+
+	return
+}
+
+func (f *FacebookModel) ExportHeader(outputFormat models_outputFormat.OutputFormat) (header string, err error) {
+	headerList := f.Header()
+
+	switch outputFormat {
+	case models_outputFormat.CSV:
+		header = strings.Trim(strings.Join(strings.Fields(fmt.Sprint(headerList)), ","), "[]")
+	default:
+		errStr := fmt.Sprintf("FacebookModel: Output format %s is not supported.", outputFormat)
+		err = errors.New(errStr)
+	}
+
+	return
+}
+
+func (f *FacebookModel) Export(category string, outputFormat models_outputFormat.OutputFormat) (nProducts int, products string, err error) {
+	var productsList []Product
+
+	productsList, err = f.productsList(category)
+	if err != nil {
+		return
+	}
+
+	nProducts = len(productsList)
+
+	switch outputFormat {
+	case models_outputFormat.CSV:
+		products, err = gocsv.MarshalString(&productsList)
+	default:
+		errStr := fmt.Sprintf("FacebookModel: Output format %s is not supported.", outputFormat)
+		err = errors.New(errStr)
+	}
+
 	return
 }
