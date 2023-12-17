@@ -44,7 +44,8 @@ Examples
 
     $ ./build/bin/tradesor transform \
       --catalog ./app/tests/data/tradesor_data-one_product.xml \
-      --outputFormat facebook \
+      --outputType facebook \
+      --outputFormat csv \
       --outputTo ./build/output
 
       2023/11/25 17:33:51 INFO Importing catalog ./app/tests/data/tradesor_data-one_product.xml.

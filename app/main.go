@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/amolofos/tradesor/cli"
+	"github.com/amolofos/tradesor/cmd"
 )
 
 func main() {
-	cli.Execute()
+	cmd.Execute()
 }

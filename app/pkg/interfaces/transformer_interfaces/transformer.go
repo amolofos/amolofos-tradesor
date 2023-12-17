@@ -1,12 +1,11 @@
 package transformer_interfaces
 
 import (
-	"github.com/amolofos/tradesor/pkg/features/tradesor/tradesor_models"
-	"github.com/amolofos/tradesor/pkg/models/models_csv"
+	"github.com/amolofos/tradesor/pkg/features/tradesor"
+	"github.com/amolofos/tradesor/pkg/interfaces/canonical_models"
 )
 
-type TransformerInterface struct{}
-
-func (t *TransformerInterface) TransformToCsv(xmlDoc *tradesor_models.Xml) (csvDoc *models_csv.Csv, err error) {
-	return nil, nil
+type Transformer interface {
+	Init()
+	CanonicalModel(xmlDoc *tradesor.ModelXml) (nProducts int, doc canonical_models.CanonicalModel, err error)
 }
