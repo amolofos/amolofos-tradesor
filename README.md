@@ -31,9 +31,9 @@ Examples
 
     ```bash
     $ ./build/bin/tradesor transform \
-      --catalog https://www.tradesor.gr/xml/?serial=REPLACE_ME_WITH_YOUR_SERIAL \
-      --outputFormat facebook \
-      --outputTo ./build/output
+      --catalog    https://www.tradesor.gr/xml/?serial=REPLACE_ME_WITH_YOUR_SERIAL \
+      --outputType woo-product-csv \
+      --outputTo   ./build/output
     ```
 
 * Use catalog from a locally downloaded file.
@@ -43,10 +43,10 @@ Examples
     ls: cannot access './build/output': No such file or directory
 
     $ ./build/bin/tradesor transform \
-      --catalog ./app/tests/data/tradesor_data-one_product.xml \
-      --outputType facebook \
+      --catalog      ./app/tests/data/tradesor_data-one_product.xml \
+      --outputType   woo-product-csv \
       --outputFormat csv \
-      --outputTo ./build/output
+      --outputTo     ./build/output
 
       2023/11/25 17:33:51 INFO Importing catalog ./app/tests/data/tradesor_data-one_product.xml.
       2023/11/25 17:33:51 INFO Imported 1 products.
